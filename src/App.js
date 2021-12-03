@@ -1,23 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
 
 function App() {
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
+  const readFileOnUpload = uploadedFile => {
+    const fileReader = new FileReader();
+    fileReader.onloadend = () => {
+      try {
+        const result = JSON.parse(fileReader.result);
+        setData(prevState => [...prevState, ...result]);
+      } catch (e) {
+        console.log(e.message);
+      }
+    };
+    if (uploadedFile !== undefined) {
+      fileReader.readAsText(uploadedFile);
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input type="file" onChange={e => readFileOnUpload(e.target.files[0])} />
+      <p>{JSON.stringify(data)}</p>
     </div>
   );
 }
